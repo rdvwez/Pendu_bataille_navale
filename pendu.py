@@ -1,66 +1,47 @@
 import random
 
-class Pendu():
-    def __init__(self) -> None:
-        self._words = ['gagne', 'raptor', 'bouteille', 'ville', 'femme', 'Pays', 'balle', 'cuire', 'football']
-        self._hidden_word = ''
-        self._user_input = ''
-        self._word_under_construction = ''
-        self.collect_user_input = []
+def choisir_mot():
+    """Choisit un mot aléatoire parmi une liste prédéfinie."""
+    mots = ["gagne", "raptor", "bouteille"]
+    return random.choice(mots)
 
-    def choose_word(self):
-        self._hidden_word = random.choice(self._words)
-
-    def get_user_input(self):
-        self._user_input = input('Choisissez une lettre (S pour saisir le mot) - > ')
-        if self._user_input.lower() == 's':
-            self.saisir_mot()
+def afficher_mot(mot, lettres_trouvees):
+    """Affiche le mot avec les lettres trouvées et des underscores pour les lettres manquantes."""
+    affichage = ""
+    for lettre in mot:
+        if lettre in lettres_trouvees:
+            affichage += lettre + " "
         else:
-            self.collect_user_input.append(self._user_input.lower())
+            affichage += "_ "
+    return affichage
 
-    def _print_under_construction_word(self):
-        self._word_under_construction = ''
-        for l in self._hidden_word:
-            if l in self.collect_user_input:
-                self._word_under_construction += l
+def jouer_pendu():
+    mot_a_deviner = choisir_mot()
+    lettres_deja_saisies = []
+    essais = 0
+    lettres_trouvees = set()
+
+    print("Bienvenue au jeu du Pendu !")
+
+    while essais < 10 and set(mot_a_deviner) != lettres_trouvees:
+        print("\nMot à deviner :", afficher_mot(mot_a_deviner, lettres_trouvees))
+        print("Lettres déjà saisies :", ", ".join(lettres_deja_saisies))
+        lettre = input("Saisissez une lettre : ").lower()
+
+        if lettre in lettres_deja_saisies:
+            print("Vous avez déjà saisi cette lettre.")
+        else:
+            lettres_deja_saisies.append(lettre)
+            if lettre in mot_a_deviner:
+                lettres_trouvees.add(lettre)
+                print("Bonne devinette !")
             else:
-                self._word_under_construction += '_'
-        print(self._word_under_construction)
+                essais += 1
+                print("Cette lettre n'est pas dans le mot.")
 
-    def validate_word(self):
-        if self._user_input not in self._hidden_word:
-            print('Mot non trouvé. Un dessin fait en chaine de caractère.')
-        elif self._user_input in self.collect_user_input:
-            print(f'Lettre déjà saisie : {", ".join(self.collect_user_input)}')
-        else:
-            self._print_under_construction_word()
+    if set(mot_a_deviner) == lettres_trouvees:
+        print("\nFélicitations ! Vous avez trouvé le mot :", mot_a_deviner)
+    else:
+        print("\nDommage, vous avez dépassé le nombre d'essais. Le mot était :", mot_a_deviner)
 
-    def saisir_mot(self):
-        mot_saisi = input('Saisissez le mot - > ')
-        if mot_saisi.lower() == self._hidden_word.lower():
-            print(f'Félicitations, vous avez trouvé le mot caché : {self._hidden_word}')
-            exit()
-        else:
-            print('Mot incorrect. Pénalité appliquée.')
-
-    def main(self):
-        self.choose_word()
-        i = 0
-        while i < 10:
-            print(f'\nEssai {i + 1}')
-            self.get_user_input()
-            self.validate_word()
-
-            if self._hidden_word.lower() == self._word_under_construction.lower():
-                print(f'Félicitations, vous avez trouvé le mot caché : {self._hidden_word}')
-                break
-
-            i += 1
-
-        print('\nVous avez épuisé vos possibilités.')
-        print(f'Le mot caché était : {self._hidden_word}')
-
-
-if __name__ == '__main__':
-    pendu = Pendu()
-    pendu.main()
+jouer_pendu()
