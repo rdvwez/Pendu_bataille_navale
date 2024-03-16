@@ -1,47 +1,49 @@
 import random
 
-def choisir_mot():
-    """Choisit un mot aléatoire parmi une liste prédéfinie."""
-    mots = ["gagne", "raptor", "bouteille"]
+# Liste de mots à deviner
+mots = ["gagne", "raptor", "bouteille"]
+
+def choisir_mot_aleatoire():
     return random.choice(mots)
 
-def afficher_mot(mot, lettres_trouvees):
-    """Affiche le mot avec les lettres trouvées et des underscores pour les lettres manquantes."""
-    affichage = ""
+def afficher_mot_cache(mot, lettres_trouvees):
+    mot_affiche = ""
     for lettre in mot:
         if lettre in lettres_trouvees:
-            affichage += lettre + " "
+            mot_affiche += lettre
         else:
-            affichage += "_ "
-    return affichage
+            mot_affiche += "_"
+    return mot_affiche
 
-def jouer_pendu():
-    mot_a_deviner = choisir_mot()
-    lettres_deja_saisies = []
-    essais = 0
+def jouer():
+    mot_a_deviner = choisir_mot_aleatoire()
     lettres_trouvees = set()
+    essais = 0
+    points = 0
 
-    print("Bienvenue au jeu du Pendu !")
+    while True:
+        print("\nMot à deviner :", afficher_mot_cache(mot_a_deviner, lettres_trouvees))
+        lettre = input("Entrez une lettre : ").lower()
 
-    while essais < 10 and set(mot_a_deviner) != lettres_trouvees:
-        print("\nMot à deviner :", afficher_mot(mot_a_deviner, lettres_trouvees))
-        print("Lettres déjà saisies :", ", ".join(lettres_deja_saisies))
-        lettre = input("Saisissez une lettre : ").lower()
-
-        if lettre in lettres_deja_saisies:
-            print("Vous avez déjà saisi cette lettre.")
+        if lettre in lettres_trouvees:
+            print("Cette lettre a déjà été saisie.")
+        elif lettre in mot_a_deviner:
+            print("Bonne lettre !")
+            lettres_trouvees.add(lettre)
+            points += 2
         else:
-            lettres_deja_saisies.append(lettre)
-            if lettre in mot_a_deviner:
-                lettres_trouvees.add(lettre)
-                print("Bonne devinette !")
-            else:
-                essais += 1
-                print("Cette lettre n'est pas dans le mot.")
+            print("Lettre incorrecte.")
+            points = max(0, points - 3)
 
-    if set(mot_a_deviner) == lettres_trouvees:
-        print("\nFélicitations ! Vous avez trouvé le mot :", mot_a_deviner)
-    else:
-        print("\nDommage, vous avez dépassé le nombre d'essais. Le mot était :", mot_a_deviner)
+        essais += 1
 
-jouer_pendu()
+        if essais > 10 or set(mot_a_deviner) == lettres_trouvees:
+            break
+
+    print("\nMot à deviner :", mot_a_deviner)
+    print("Nombre d'essais :", essais)
+    print("Points :", points)
+
+if __name__ == "__main__":
+    jouer()
+
